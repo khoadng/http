@@ -244,6 +244,13 @@ abstract class Connection {
       _localWindow,
     );
 
+    final connectionWindowSize = settingsObject.connectionWindowSize;
+    if (connectionWindowSize != null) {
+      connectionWindowUpdater.growWindow(
+        connectionWindowSize - _localWindow.size,
+      );
+    }
+
     // Setup queues for outgoing/incoming messages on the connection level.
     _outgoingQueue = ConnectionMessageQueueOut(
       _connectionWindowHandler,
@@ -494,6 +501,15 @@ abstract class Connection {
         timeout,
         'inboundHeaderBlockTimeout',
         'must not be negative',
+      );
+    }
+    final connectionWindowSize = settings.connectionWindowSize;
+    if (connectionWindowSize != null) {
+      RangeError.checkValueInInterval(
+        connectionWindowSize,
+        Window().size,
+        Window.MAX_WINDOW_SIZE,
+        'connectionWindowSize',
       );
     }
     final violations = settings.maxPeerStreamLimitViolations;

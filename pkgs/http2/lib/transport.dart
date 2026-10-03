@@ -74,6 +74,14 @@ abstract class Settings {
   /// streams (defaults to 65535 bytes).
   final int? streamWindowSize;
 
+  /// The connection window size the remote peer can use across all streams
+  /// (defaults to 65535 bytes).
+  ///
+  /// HTTP/2 caps every connection at 65535 bytes in flight until the receiver
+  /// grows the connection window, so raising [streamWindowSize] alone does not
+  /// raise throughput. Must be between 65535 and 2^31-1, inclusive.
+  final int? connectionWindowSize;
+
   /// Maximum compressed bytes retained for one inbound field block.
   ///
   /// This is a local enforcement limit and is not advertised to the peer.
@@ -112,6 +120,7 @@ abstract class Settings {
   const Settings({
     this.concurrentStreamLimit,
     this.streamWindowSize,
+    this.connectionWindowSize,
     this.maxInboundHeaderBlockSize,
     this.maxInboundHeaderListSize,
     this.inboundHeaderBlockTimeout,
@@ -125,6 +134,7 @@ class ServerSettings extends Settings {
   const ServerSettings({
     super.concurrentStreamLimit = defaultMaxConcurrentStreams,
     super.streamWindowSize,
+    super.connectionWindowSize,
     super.maxInboundHeaderBlockSize = defaultMaxInboundHeaderBlockSize,
     super.maxInboundHeaderListSize = defaultMaxInboundHeaderListSize,
     super.inboundHeaderBlockTimeout = defaultInboundHeaderBlockTimeout,
@@ -141,6 +151,7 @@ class ClientSettings extends Settings {
   const ClientSettings({
     super.concurrentStreamLimit = defaultMaxConcurrentStreams,
     super.streamWindowSize,
+    super.connectionWindowSize,
     super.maxInboundHeaderBlockSize = defaultMaxInboundHeaderBlockSize,
     super.maxInboundHeaderListSize = defaultMaxInboundHeaderListSize,
     super.inboundHeaderBlockTimeout = defaultInboundHeaderBlockTimeout,

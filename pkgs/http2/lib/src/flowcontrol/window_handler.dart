@@ -151,6 +151,14 @@ class IncomingWindowHandler {
     }
   }
 
+  /// Allows the peer to send [increment] more bytes beyond the current window.
+  void growWindow(int increment) {
+    if (increment == 0) return;
+
+    _localWindow.modify(increment);
+    _frameWriter.writeWindowUpdate(increment, streamId: _streamId);
+  }
+
   /// Tell the peer we received [numberOfBytes] bytes. It will increase it's
   /// sending window then.
   ///

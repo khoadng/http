@@ -566,6 +566,10 @@ void main() {
                   serverSentBytes - kChunkSize + 1,
                   lessThan(expectedStreamFlowcontrolWindow),
                 );
+                expect(
+                  serverSentBytes + kChunkSize,
+                  greaterThanOrEqualTo(expectedStreamFlowcontrolWindow),
+                );
                 flowcontrolWindowFull.complete();
               })
               ..onResume = addData
@@ -627,6 +631,20 @@ void main() {
       ) async {
         await testWindowSize(client, server, 8096);
       }, clientSettings: const ClientSettings(streamWindowSize: 8096));
+
+      transportTest(
+        'fast-sender-receiver-paused--200kb-window-size',
+        (
+          ClientTransportConnection client,
+          ServerTransportConnection server,
+        ) async {
+          await testWindowSize(client, server, 200000);
+        },
+        clientSettings: const ClientSettings(
+          streamWindowSize: 200000,
+          connectionWindowSize: 1 << 20,
+        ),
+      );
     });
   });
 }

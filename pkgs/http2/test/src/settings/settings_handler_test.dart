@@ -117,6 +117,36 @@ void main() {
       verifyZeroInteractions(writer);
     });
 
+    test('initial-window-size-changes-notify-only-for-peer-settings', () {
+      var writer = FrameWriterMock();
+      var sh = SettingsHandler(
+        HPackEncoder(),
+        writer,
+        ActiveSettings(),
+        ActiveSettings(),
+      );
+      var changes = <int>[];
+      sh.onInitialWindowSizeChange.listen(changes.add);
+      var windowSettings = [
+        Setting(Setting.SETTINGS_INITIAL_WINDOW_SIZE, 200000),
+      ];
+
+      sh.changeSettings(windowSettings);
+      sh.handleSettingsFrame(
+        SettingsFrame(
+          FrameHeader(0, FrameType.SETTINGS, SettingsFrame.FLAG_ACK, 0),
+          [],
+        ),
+      );
+      expect(sh.acknowledgedSettings.initialWindowSize, 200000);
+      expect(changes, isEmpty);
+
+      sh.handleSettingsFrame(
+        SettingsFrame(FrameHeader(6, FrameType.SETTINGS, 0, 0), windowSettings),
+      );
+      expect(changes, [200000 - 65535]);
+    });
+
     test('change-max-header-table-size', () {
       var writer = FrameWriterMock();
       var mock = HPackEncoderMock();

@@ -1,3 +1,10 @@
+## 3.2.0-wip
+
+- Add `Settings.connectionWindowSize` to grow the connection-level flow
+  control window beyond the 65535-byte default.
+- Stop applying acknowledged local `SETTINGS_INITIAL_WINDOW_SIZE` changes to
+  the send windows of existing streams.
+
 ## 3.1.0
 
 - Gracefully handle receiving headers on a stream that the client has canceled. (#1799)
